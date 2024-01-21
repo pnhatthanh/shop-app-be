@@ -3,11 +3,14 @@ package com.first_project.shopapp.controllers;
 import com.first_project.shopapp.dtos.UserDTO;
 import com.first_project.shopapp.dtos.UserLoginDTO;
 import com.first_project.shopapp.exceptions.InvalidParamException;
+import com.first_project.shopapp.models.User;
+import com.first_project.shopapp.responses.LoginResponse;
 import com.first_project.shopapp.services.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -27,16 +30,15 @@ public class UserController {
         if(result.hasErrors()){
             List<String> messageErrors=result.getAllErrors().stream()
                     .map(error->error.getDefaultMessage()).toList();
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(messageErrors);
+            return new ResponseEntity<>(messageErrors,HttpStatus.BAD_REQUEST);
         }
         try{
             if(!userDTO.getPassword().equals(userDTO.getRetypePassword())){
                 throw new InvalidParamException( "The re-entered password does not match");
             }
-            userService.createUser(userDTO);
-            return ResponseEntity.status(HttpStatus.OK).body("Register successfully");
+            return new ResponseEntity<>(userService.createUser(userDTO), HttpStatus.CREATED);
         }catch (Exception e){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+            return new ResponseEntity<>(e.getMessage(),HttpStatus.BAD_REQUEST);
         }
     }
     @PostMapping("/login")
@@ -45,14 +47,16 @@ public class UserController {
         if(result.hasErrors()){
             List<String> messageErrors=result.getAllErrors().stream()
                     .map(error->error.getDefaultMessage()).toList();
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid data provider");
+            return new ResponseEntity<>(messageErrors,HttpStatus.BAD_REQUEST);
         }
-        // Kiểm tra thông tin đăng nhập và sinh token
         try {
-            String token = userService.login(userLoginDTO.getPhoneNumber(), userLoginDTO.getPassword());
-            return ResponseEntity.ok(token);
+            String token = userService.login(userLoginDTO.getPhoneNumber(), userLoginDTO.getPassword(), userLoginDTO.getRoleId());
+            return new ResponseEntity<>(LoginResponse.builder()
+                                                    .message("Login successfully")
+                                                    .token(token)
+                                                    .build(),HttpStatus.OK);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).body(e.getMessage());
+            return new ResponseEntity<>(e.getMessage(),HttpStatus.BAD_REQUEST);
         }
 
     }

@@ -56,7 +56,7 @@ public class UserService implements IUserService{
     }
 
     @Override
-    public String login(String phoneNumber, String password) throws Exception {
+    public String login(String phoneNumber, String password,Long roleId) throws Exception {
         Optional<User> user=userRepository.findByPhoneNumber(phoneNumber);
         if(user.isEmpty()){
             throw new InvalidParamException("Invalid phoneNumber or password");
@@ -64,6 +64,8 @@ public class UserService implements IUserService{
         User userExisting=user.get();
         if(userExisting.getFacebookAccountId()==0
                 &&userExisting.getGoogleAccountId()==0){
+            if(!roleId.equals(userExisting.getRole().getId()))
+                    throw new BadCredentialsException("Invalid phoneNumber, password or role");
             if(!passwordEncoder.matches(password,userExisting.getPassword())){
                 throw new BadCredentialsException("Invalid phoneNumber or password");
             }

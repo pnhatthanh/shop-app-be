@@ -13,4 +13,5 @@ public class UserLoginDTO {
     private String phoneNumber;
     @NotBlank(message = "Password is required")
     private String password;
+    private Long roleId;
 }
