@@ -7,6 +7,8 @@ import com.first_project.shopapp.models.ProductImage;
 import com.first_project.shopapp.services.ProductService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -20,6 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -100,6 +103,22 @@ public class ProductController {
         // Sao chép file vào thư mục đích
         Files.copy(file.getInputStream(), destination, StandardCopyOption.REPLACE_EXISTING);
         return uniqueFile;
+    }
+    @GetMapping("/thumbnail/{img_url}")
+    public ResponseEntity<?> getThumbnail(@PathVariable("img_url") String imgUrl){
+        try{
+                Path imagePth=Paths.get("uploads/"+imgUrl);
+                Resource resource=new UrlResource(imagePth.toUri());
+                if(resource.exists()){
+                    return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG)
+                            .body(resource);
+                }else{
+                    return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG)
+                            .body(new UrlResource(Paths.get("uploads/not_found.png").toUri()));
+                }
+            } catch (MalformedURLException e) {
+                return ResponseEntity.notFound().build();
+            }
     }
     @PutMapping("/update/{product_id}")
     public ResponseEntity<?> updateProduct(@Valid @PathVariable("product_id") Long id,

@@ -98,6 +98,3 @@ alter table detail_order
 add column order_id int;
 ALTER TABLE detail_order
 ADD CONSTRAINT fk_do FOREIGN KEY (order_id) REFERENCES `order` (id);
-
-
-
