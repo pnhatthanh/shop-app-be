@@ -9,4 +9,5 @@ import lombok.*;
 public class CategoryDTO {
     @NotBlank(message = "Category's name cannot be empty")
     private String name;
+    private String symbol;
 }

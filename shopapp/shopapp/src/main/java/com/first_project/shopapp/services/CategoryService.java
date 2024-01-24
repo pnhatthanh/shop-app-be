@@ -7,9 +7,18 @@ import com.first_project.shopapp.models.Category;
 import com.first_project.shopapp.repositories.CategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class CategoryService implements ICategoryService{
@@ -34,6 +43,7 @@ public class CategoryService implements ICategoryService{
         }
         Category category=new Category();
         category.setNameCategory(categoryDTO.getName());
+        category.setSymbol(categoryDTO.getSymbol());
         return categoryRepository.save(category);
     }
 
@@ -52,4 +62,5 @@ public class CategoryService implements ICategoryService{
     public void deleteCategory(Long categoryId) {
         categoryRepository.deleteById(categoryId);
     }
+
 }

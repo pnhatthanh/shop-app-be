@@ -14,4 +14,5 @@ public class Category {
     private Long id;
     @Column(name = "name_category")
     private String nameCategory;
+    private String symbol;
 }

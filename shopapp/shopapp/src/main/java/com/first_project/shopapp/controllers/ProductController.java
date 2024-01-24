@@ -137,7 +137,7 @@ public class ProductController {
     }
     @GetMapping("")
     public ResponseEntity<?> getProducts(@RequestParam("page") int page, @RequestParam("limit") int limit){
-        PageRequest pageRequest=PageRequest.of(page,limit, Sort.by("createdAt").descending());
+        PageRequest pageRequest=PageRequest.of(page,limit, Sort.by("id").ascending());
         Page<Product> productPage = productService.getAllProducts(pageRequest);
         int totalPages=productPage.getTotalPages();
         List<Product> products=productPage.getContent();
