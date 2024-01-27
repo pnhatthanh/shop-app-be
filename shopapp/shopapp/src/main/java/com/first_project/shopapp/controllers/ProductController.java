@@ -4,6 +4,8 @@ import com.first_project.shopapp.dtos.ProductDTO;
 import com.first_project.shopapp.dtos.ProductImageDTO;
 import com.first_project.shopapp.models.Product;
 import com.first_project.shopapp.models.ProductImage;
+import com.first_project.shopapp.responses.ProductResponse;
+import com.first_project.shopapp.services.DetailProductService;
 import com.first_project.shopapp.services.ProductService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +39,8 @@ import java.util.UUID;
 public class ProductController {
     @Autowired
     ProductService productService;
+    @Autowired
+    DetailProductService detailProductService;
     @PostMapping("/create")
     public ResponseEntity<?> createProduct(@Valid @RequestBody ProductDTO productDTO,
                                            BindingResult result){
@@ -136,17 +140,16 @@ public class ProductController {
         }
     }
     @GetMapping("")
-    public ResponseEntity<?> getProducts(@RequestParam("page") int page, @RequestParam("limit") int limit){
+    public ResponseEntity<?> getProducts(@RequestParam(value = "page",defaultValue = "0") int page,
+                                         @RequestParam(value = "limit",defaultValue = "12") int limit){
         PageRequest pageRequest=PageRequest.of(page,limit, Sort.by("id").ascending());
         Page<Product> productPage = productService.getAllProducts(pageRequest);
-        int totalPages=productPage.getTotalPages();
-        List<Product> products=productPage.getContent();
-        return ResponseEntity.status(HttpStatus.OK).body(products);
+        return ResponseEntity.status(HttpStatus.OK).body(productPage);
     }
     @GetMapping("/{id}")
-    public ResponseEntity<?> getProduct(@PathVariable Long id){
+    public ResponseEntity<?> getProduct(@PathVariable(name = "id") Long id){
         try{
-            Product product=productService.getProductById(id);
+            ProductResponse product=detailProductService.getDetailProduct(id);
             return ResponseEntity.status(HttpStatus.OK).body(product);
         }catch(Exception e){
             return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).body(e.getMessage());
