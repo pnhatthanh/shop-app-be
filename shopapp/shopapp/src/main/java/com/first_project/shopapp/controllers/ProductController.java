@@ -41,6 +41,8 @@ public class ProductController {
     ProductService productService;
     @Autowired
     DetailProductService detailProductService;
+
+    //add new product by admin
     @PostMapping("/create")
     public ResponseEntity<?> createProduct(@Valid @RequestBody ProductDTO productDTO,
                                            BindingResult result){
@@ -57,6 +59,7 @@ public class ProductController {
         }
     }
 
+    //upload image for product by admin
     @PostMapping(value = "upload/img/{product_id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> uploadImg(@PathVariable("product_id")Long id,
                                        @ModelAttribute("files") List<MultipartFile> files){
@@ -92,6 +95,8 @@ public class ProductController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
+
+    //store image in uploads
     private String storeFile(MultipartFile file) throws IOException {
         if(file.getOriginalFilename()==null){
             throw new RuntimeException("Invalid image format");
@@ -108,6 +113,8 @@ public class ProductController {
         Files.copy(file.getInputStream(), destination, StandardCopyOption.REPLACE_EXISTING);
         return uniqueFile;
     }
+
+    //get image by name's image in uploads
     @GetMapping("/thumbnail/{img_url}")
     public ResponseEntity<?> getThumbnail(@PathVariable("img_url") String imgUrl){
         try{
@@ -124,6 +131,8 @@ public class ProductController {
                 return ResponseEntity.notFound().build();
             }
     }
+
+    //update product by id with admin
     @PutMapping("/update/{product_id}")
     public ResponseEntity<?> updateProduct(@Valid @PathVariable("product_id") Long id,
                                            @RequestBody ProductDTO productDTO, BindingResult result){
@@ -139,6 +148,8 @@ public class ProductController {
             return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).body(e.getMessage());
         }
     }
+
+    //get all product by page
     @GetMapping("")
     public ResponseEntity<?> getProducts(@RequestParam(value = "page",defaultValue = "0") int page,
                                          @RequestParam(value = "limit",defaultValue = "12") int limit){
@@ -146,6 +157,8 @@ public class ProductController {
         Page<Product> productPage = productService.getAllProducts(pageRequest);
         return ResponseEntity.status(HttpStatus.OK).body(productPage);
     }
+
+    //get detail product by id
     @GetMapping("/{id}")
     public ResponseEntity<?> getProduct(@PathVariable(name = "id") Long id){
         try{
@@ -159,5 +172,15 @@ public class ProductController {
     public ResponseEntity<?> deleteProduct(@PathVariable Long id){
         productService.deleteProduct(id);
         return ResponseEntity.status(HttpStatus.OK).body("Delete successfully");
+    }
+
+    //get all image's product by id
+    @GetMapping("/image/{id}")
+    public ResponseEntity<?> getImageProduct(@PathVariable(name = "id") Long id){
+        try{
+            return ResponseEntity.ok().body(detailProductService.getProductImage(id));
+        }catch (Exception e){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
     }
 }
