@@ -76,12 +76,18 @@ public class ProductService implements IProductService{
 
     @Override
     public ProductImage createProductImage(Long productId, ProductImageDTO productImageDTO) throws Exception {
-        Product product=productRepository.findById(productId).orElseThrow(
-                ()-> new DataNotFoundException("Cannot find product with id= "+productId)
+        Product product = productRepository.findById(productId).orElseThrow(
+                () -> new DataNotFoundException("Cannot find product with id= " + productId)
         );
-        ProductImage productImage=new ProductImage();
+        ProductImage productImage = new ProductImage();
         productImage.setProduct(product);
         productImage.setImageUrl(productImageDTO.getImageUrl());
         return productImageRepository.save(productImage);
     }
+
+    @Override
+    public Page<Product> searchProducts(Long idCategory, String nameProduct, PageRequest pageRequest) {
+        return productRepository.searchProducts(idCategory,nameProduct,pageRequest);
+    }
+
 }

@@ -22,8 +22,6 @@ public class DetailProductService implements IDetailProductService{
     DetailProductRepository detailProductRepository;
     @Autowired
     ProductImageRepository productImageRepository;
-    @Autowired
-    ProductRepository productRepository;
     @Override
     public ProductResponse getDetailProduct(Long idProduct) throws DataNotFoundException {
         Optional<DetailProduct> detailProduct=detailProductRepository.findByProductId(idProduct);

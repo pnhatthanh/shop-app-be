@@ -18,4 +18,5 @@ public interface IProductService {
     void deleteProduct(Long id);
     boolean existsByName(String nameProduct);
     ProductImage createProductImage(Long productId, ProductImageDTO productImageDTO) throws  Exception;
+    Page<Product> searchProducts(Long idCategory, String nameProduct,PageRequest pageRequest);
 }

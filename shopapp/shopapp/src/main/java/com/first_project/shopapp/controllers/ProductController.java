@@ -158,11 +158,37 @@ public class ProductController {
         return ResponseEntity.status(HttpStatus.OK).body(productPage);
     }
 
+    //search products by category or name
+    @GetMapping("/search")
+    public ResponseEntity<?> searchProducts(@RequestParam(value = "page", defaultValue = "0") int page,
+                                            @RequestParam(value = "limit",defaultValue = "12") int limit,
+                                            @RequestParam(value = "category", defaultValue = "0") Long idCategory,
+                                            @RequestParam(value = "nameProduct", defaultValue = "") String nameProduct){
+        PageRequest pageRequest=PageRequest.of(page, limit);
+        Page<Product> products=productService.searchProducts(idCategory,nameProduct,pageRequest);
+        List<Product> productList=products.getContent();
+        return ResponseEntity.status(HttpStatus.OK).body(productList);
+    }
+
+
+
+
+
+
     //get detail product by id
+    @GetMapping("/description/{id}")
+    public ResponseEntity<?> getDescriptionProduct(@PathVariable(name = "id") Long id){
+        try{
+            ProductResponse product=detailProductService.getDetailProduct(id);
+            return ResponseEntity.status(HttpStatus.OK).body(product);
+        }catch(Exception e){
+            return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).body(e.getMessage());
+        }
+    }
     @GetMapping("/{id}")
     public ResponseEntity<?> getProduct(@PathVariable(name = "id") Long id){
         try{
-            ProductResponse product=detailProductService.getDetailProduct(id);
+            Product product=productService.getProductById(id);
             return ResponseEntity.status(HttpStatus.OK).body(product);
         }catch(Exception e){
             return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).body(e.getMessage());
