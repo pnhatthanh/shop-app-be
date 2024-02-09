@@ -166,13 +166,8 @@ public class ProductController {
                                             @RequestParam(value = "nameProduct", defaultValue = "") String nameProduct){
         PageRequest pageRequest=PageRequest.of(page, limit);
         Page<Product> products=productService.searchProducts(idCategory,nameProduct,pageRequest);
-        List<Product> productList=products.getContent();
-        return ResponseEntity.status(HttpStatus.OK).body(productList);
+        return ResponseEntity.status(HttpStatus.OK).body(products);
     }
-
-
-
-
 
 
     //get detail product by id

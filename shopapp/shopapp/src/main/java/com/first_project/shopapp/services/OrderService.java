@@ -1,11 +1,11 @@
 package com.first_project.shopapp.services;
 
+import com.first_project.shopapp.dtos.CartItemsDTO;
 import com.first_project.shopapp.dtos.OrderDTO;
 import com.first_project.shopapp.exceptions.DataNotFoundException;
 import com.first_project.shopapp.exceptions.InvalidParamException;
-import com.first_project.shopapp.models.Order;
-import com.first_project.shopapp.models.OrderStatus;
-import com.first_project.shopapp.models.User;
+import com.first_project.shopapp.models.*;
+import com.first_project.shopapp.repositories.DetailOrderRepository;
 import com.first_project.shopapp.repositories.OrderRepository;
 import com.first_project.shopapp.repositories.UserRepository;
 import org.modelmapper.ModelMapper;
@@ -24,6 +24,11 @@ public class OrderService implements IOrderService{
     UserRepository userRepository;
     @Autowired
     ModelMapper modelMapper;
+    @Autowired
+    ProductService productService;
+
+    @Autowired
+    DetailOrderRepository detailOrderRepository;
     @Override
     public Order createOrder(OrderDTO orderDTO) throws Exception {
         User user=userRepository.findById(orderDTO.getUserId()).orElseThrow(
@@ -43,7 +48,19 @@ public class OrderService implements IOrderService{
         }
         order.setShippingDate(shippingDate);
         order.setActive(true);
-        return orderRepository.save(order);
+        orderRepository.save(order);
+        for(CartItemsDTO item:orderDTO.getItems()){
+            Product product=productService.getProductById(item.getIdProduct());
+            DetailOrder detailOrder=DetailOrder.builder().
+                            order(order)
+                            .product(product)
+                            .price(product.getPrice())
+                            .numberOfProduct(item.getQuantityItem())
+                            .totalMoney(product.getPrice()*item.getQuantityItem())
+                            .build();
+            detailOrderRepository.save(detailOrder);
+        }
+        return order;
     }
 
     @Override
