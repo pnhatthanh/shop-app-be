@@ -8,6 +8,7 @@ import com.first_project.shopapp.models.Role;
 import com.first_project.shopapp.models.User;
 import com.first_project.shopapp.repositories.RoleRepository;
 import com.first_project.shopapp.repositories.UserRepository;
+import com.first_project.shopapp.responses.UserResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -15,6 +16,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.swing.text.html.Option;
 import java.util.Optional;
 
 @Service
@@ -76,5 +78,18 @@ public class UserService implements IUserService{
         );
         authenticationManager.authenticate(token);
         return jwtTokenUtil.generateToken(userExisting);
+    }
+
+    @Override
+    public UserResponse getUserDetails(String token) throws Exception {
+        if(jwtTokenUtil.checkExpiredToken(token)){
+            throw new Exception("Token is expired");
+        }
+        String phoneNumber=jwtTokenUtil.extraPhoneNumber(token);
+        Optional<User> user=userRepository.findByPhoneNumber(phoneNumber);
+        if(user.isEmpty()){
+            throw new Exception ("Cannot find user");
+        }
+        return UserResponse.fromUser(user.get());
     }
 }
