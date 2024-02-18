@@ -2,6 +2,7 @@ package com.first_project.shopapp.controllers;
 
 import com.first_project.shopapp.dtos.OrderDTO;
 import com.first_project.shopapp.models.Order;
+import com.first_project.shopapp.responses.ResponseObject;
 import com.first_project.shopapp.services.OrderService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +28,9 @@ public class OrderController {
         }
         try{
             orderService.createOrder(orderDTO);
-            return ResponseEntity.status(HttpStatus.OK).body("Create order successfully");
+            return ResponseEntity.status(HttpStatus.OK).body(
+                    new ResponseObject("ok","","Create order successfully")
+            );
         }catch(Exception e){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }

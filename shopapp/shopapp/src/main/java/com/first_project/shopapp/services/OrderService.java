@@ -55,8 +55,8 @@ public class OrderService implements IOrderService{
                             order(order)
                             .product(product)
                             .price(product.getPrice())
-                            .numberOfProduct(item.getQuantityItem())
-                            .totalMoney(product.getPrice()*item.getQuantityItem())
+                            .numberOfProduct(item.getQuantity())
+                            .totalMoney(product.getPrice()*item.getQuantity())
                             .build();
             detailOrderRepository.save(detailOrder);
         }
