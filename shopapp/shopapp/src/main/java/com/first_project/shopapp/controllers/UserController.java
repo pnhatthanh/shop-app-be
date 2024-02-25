@@ -1,10 +1,12 @@
 package com.first_project.shopapp.controllers;
 
+import com.first_project.shopapp.dtos.RefreshTokenDTO;
 import com.first_project.shopapp.dtos.UserDTO;
 import com.first_project.shopapp.dtos.UserLoginDTO;
 import com.first_project.shopapp.exceptions.InvalidParamException;
 import com.first_project.shopapp.models.User;
 import com.first_project.shopapp.responses.LoginResponse;
+import com.first_project.shopapp.services.TokenService;
 import com.first_project.shopapp.services.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +21,8 @@ import java.util.List;
 @RestController
 @RequestMapping("${api.prefix}/user")
 public class UserController {
+    @Autowired
+    TokenService tokenService;
     @Autowired
     UserService userService;
     @PostMapping("/register")
@@ -50,6 +54,7 @@ public class UserController {
             String token = userService.login(userLoginDTO.getPhoneNumber(), userLoginDTO.getPassword(), userLoginDTO.getRoleId());
             return new ResponseEntity<>(LoginResponse.builder()
                                                     .message("Login successfully")
+                                                    .key_refresh(tokenService.createToken(userLoginDTO.getPhoneNumber()).getToken())
                                                     .token(token)
                                                     .build(),HttpStatus.OK);
         } catch (Exception e) {
@@ -64,6 +69,19 @@ public class UserController {
             return ResponseEntity.ok().body(userService.getUserDetails(extractedToken));
         }catch (Exception e){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<?> refreshToken(@RequestBody RefreshTokenDTO refreshTokenDTO){
+        try {
+            String accessToken=tokenService.refreshToken(refreshTokenDTO.getToken());
+            return new ResponseEntity<>(LoginResponse.builder()
+                    .message("Refresh token successfully")
+                    .token(accessToken)
+                    .key_refresh(refreshTokenDTO.getToken()).build(),HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(),HttpStatus.BAD_REQUEST);
         }
     }
 }

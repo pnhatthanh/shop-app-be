@@ -12,4 +12,5 @@ import java.util.List;
 public class LoginResponse {
     private String message;
     private String token;
+    private String key_refresh;
 }

@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.util.Pair;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -39,7 +40,8 @@ public class WebSecurityConfig {
                     request
                             .requestMatchers(
                                     String.format("%s/user/register", apiPrefix),
-                                    String.format("%s/user/login", apiPrefix)
+                                    String.format("%s/user/login", apiPrefix),
+                                    String.format("%s/user/refresh", apiPrefix)
                             )
                             .permitAll()
                             .requestMatchers(GET,
