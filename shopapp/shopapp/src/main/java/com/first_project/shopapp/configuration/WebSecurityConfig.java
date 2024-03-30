@@ -86,7 +86,7 @@ public class WebSecurityConfig {
                                     String.format("%s/order/**", apiPrefix)).hasRole(Role.ADMIN)
 
                             .requestMatchers(DELETE,
-                                    String.format("%s/order/**", apiPrefix)).hasRole(Role.ADMIN)
+                                    String.format("%s/order/**", apiPrefix)).hasAnyRole(Role.ADMIN, Role.USER)
 
                             .requestMatchers(POST,
                                     String.format("%s/detail_order/**", apiPrefix)).hasAnyRole(Role.USER)

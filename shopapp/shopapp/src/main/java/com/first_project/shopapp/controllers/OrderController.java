@@ -67,6 +67,11 @@ public class OrderController {
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteOrder(@PathVariable Long id){
         orderService.deleteOrder(id);
-        return ResponseEntity.status(HttpStatus.OK).body("Delete successfully");
+        return ResponseEntity.status(HttpStatus.OK).body(ResponseObject.builder()
+                .data("")
+                .message("Delete order successfully")
+                .status("ok")
+                .build()
+        );
     }
 }
